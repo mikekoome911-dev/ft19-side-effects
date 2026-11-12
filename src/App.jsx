@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductCard from './components/product-card';
+import RandomProduct from './components/random-product';
 
 const BASE_URL = 'https://fakestoreapi.com';
 
@@ -14,11 +15,14 @@ function App() {
 
 		fetch(`${BASE_URL}/products`)
 			.then((res) => res.json())
-			.then((data) => setProducts(data));
+			.then((data) => setProducts(data))
+			.catch((err) => console.error('Failed to fetch products:', err));
 	}, []);
 
 	return (
-		<div className="h-screen p-5">
+		<div className="min-h-screen p-5 flex flex-col gap-10">
+			<RandomProduct />
+
 			<div className="grid grid-cols-2 xl:grid-cols-4 gap-5">
 				{products.map((product) => (
 					<ProductCard {...product} key={product.id} />
