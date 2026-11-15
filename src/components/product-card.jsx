@@ -7,13 +7,17 @@ export default function ProductCard({
 	description,
 	category,
 	rating,
+	onSelect,
 }) {
 	return (
-		<div className="rounded-xl border border-gray-300 overflow-hidden flex flex-col justify-between">
+		<div
+			onClick={onSelect}
+			className="rounded-xl border border-gray-300 overflow-hidden flex flex-col justify-between cursor-pointer hover:shadow-lg hover:border-green-500 transition"
+		>
 			<img
 				src={image}
 				alt={title}
-				className="w-full h-75 object-contain "
+				className="w-full h-75 object-contain p-4"
 			/>
 
 			<div className="flex flex-col gap-3 p-5">

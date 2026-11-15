@@ -1,52 +1,54 @@
 import { useEffect, useState } from 'react';
- import ProductCard from './product-card';
+import ProductCard from './product-card';
 
-export default function RandomProduct() {
-	// fetch products depending on the product id https://fakestoreapi.com/products/${productId}
-	const [productId, setProductId] = useState(1);
-	const [product, setProduct] = useState(null);
-	const [loading, setLoading] = useState(true);
+export default function RandomProduct({ products = [], onSelectProduct }) {
+	const [randomProduct, setRandomProduct] = useState(null);
 
-	useEffect(
-		() => {
-			//write your fetch logic here.
+	// Set initial product once products finish loading
+	useEffect(() => {
+		if (products.length > 0 && !randomProduct) {
+			setRandomProduct(products[0]);
+		}
+	}, [products, randomProduct]);
 
-		setLoading(true);
-		fetch(`https://fakestoreapi.com/products/${productId}`)
-			.then((res) => res.json())
-			.then((data) => {
-				setProduct(data);
-				setLoading(false);
-			})
-			.catch((err) => {
-				console.error('Failed to fetch product:', err);
-				setLoading(false);
-			});
-	}, [productId]);
-
-	// implement a randomize function that returns a random integer from 1 to 20 and updates the productId state variable
 	function randomize() {
-		const randomId = Math.floor(Math.random() * 20) + 1;
-		setProductId(randomId);
+		if (products.length === 0) return;
+
+		if (products.length === 1) {
+			setRandomProduct(products[0]);
+			return;
+		}
+
+		let nextProduct = randomProduct;
+		while (nextProduct?.id === randomProduct?.id) {
+			const randomIndex = Math.floor(Math.random() * products.length);
+			nextProduct = products[randomIndex];
+		}
+		setRandomProduct(nextProduct);
 	}
 
 	return (
 		<div className="p-5 max-w-md mx-auto flex flex-col gap-5">
-			{/* display the ui here. Re-use the product card we built earlier */}
-
 			<button
+				type="button"
 				onClick={randomize}
-				className="bg-green-500 hover:bg-green-600 text-green-950 font-barlow font-bold py-3 px-5 rounded-lg cursor-pointer"
+				disabled={products.length === 0}
+				className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-green-950 font-barlow font-bold py-3 px-5 rounded-lg cursor-pointer transition"
 			>
 				Get Random Product
 			</button>
 
-			{loading ? (
+			{products.length === 0 ? (
 				<p className="text-center text-gray-500 font-sans">
-					Loading product...
+					Loading products...
 				</p>
 			) : (
-				product && <ProductCard {...product} />
+				randomProduct && (
+					<ProductCard
+						{...randomProduct}
+						onSelect={() => onSelectProduct?.(randomProduct)}
+					/>
+				)
 			)}
 		</div>
 	);
